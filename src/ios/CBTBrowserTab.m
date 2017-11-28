@@ -73,6 +73,7 @@
                                            } else {
                                                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"error"];
                                            }
+                                           [[UIApplication sharedApplication] openURL:callbackURL];
                                            [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
                                        }];
             _authenticationVC = authenticationVC;
