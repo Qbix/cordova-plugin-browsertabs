@@ -35,8 +35,7 @@ var close = function(opt_error) {
  * Note that on iOS 11 and up, this uses SFAuthenticationSession
  * @param {String} url The url to open
  * @param {Object} [options={}]
- * @param {String} options.schema The scheme to switch back to your app in iOS 11
- * @param {String} options.toolbarColor The color of the toolbar, in Android
+ * @param {String} options.scheme The scheme to switch back to your app in iOS 11
  * @param {Function} success
  * @param {Function} error
  */
@@ -57,8 +56,7 @@ exports.openUrl = function (url, options, success, error) {
  * Note that on iOS 11 and up, this uses SFAuthenticationSession
  * @param {String} url The url to open
  * @param {Object} [options={}]
- * @param {String} options.schema The scheme to switch back to your app in iOS 11
- * @param {String} options.toolbarColor The color of the toolbar, in Android
+ * @param {String} options.scheme The scheme to switch back to your app in iOS 11
  * @param {Function} success
  * @param {Function} error
  */
