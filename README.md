@@ -26,7 +26,7 @@ In this case, your WebView will not continue to run Javascript until you switch 
 
 Typically you would use this plugin for authentication flows, to grab oAuth tokens. In this case, you will have to supply the `scheme` option to be used in iOS 11:
 
-    cordova.plugins.browsertab.openUrl(url, {scheme: "myapp://", onSuccess, onError);
+    cordova.plugins.browsertab.openUrl(url, {scheme: "myapp://"}, onSuccess, onError);
 
 On iOS 11 the user will have an additional dialog before the flow proceeds, telling the user your app wants to authenticate with a certain website.
 
