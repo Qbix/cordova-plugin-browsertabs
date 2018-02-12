@@ -1,54 +1,38 @@
 # cordova-plugin-browsertab
+  Cordova plugin to open URLs in browser tabs with access to cookies (iOS, Android)
 
-Note: This is not an official Google product.
+# Platforms
 
-## About
-
-This plugin provides an interface to in-app browser tabs that exist on some
-mobile platforms, specifically
-[Custom Tabs](http://developer.android.com/tools/support-library/features.html#custom-tabs)
-on Android (including the
-[Chrome Custom Tabs](https://developer.chrome.com/multidevice/android/customtabs)
-implementation), and
-[SFSafariViewController](https://developer.apple.com/library/ios/documentation/SafariServices/Reference/SFSafariViewController_Ref/)
-on iOS.
+* iOS ([SFSafariViewController](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), [SFAuthenticationSession](https://developer.apple.com/documentation/safariservices/sfauthenticationsession) since iOS 11)
+* Android ([Chrome Custom Tabs](https://developer.chrome.com/multidevice/android/customtabs) support since Chrome 45) 
 
 ## Usage
 
-To open a URL in an in-app browser tab on a compatible platform:
+To open a URL in an in-app browser tab:
 
-    cordova.plugins.browsertab.openUrl('https://www.google.com');
+    cordova.plugins.browsertab.openUrl(url, options, onSuccess, onError);
 
-This plugin is designed to complement cordova-plugin-inappbrowser. No fallback
-is triggered automatically, you need to test whether it will succeed, and then
-perform your own fallback logic like opening the link in the system browser
-instead using cordova-plugin-inappbrowser.
+Your Cordova WebView continues to run Javascript. So you can close the tab later:
 
-    cordova.InAppBrowser.open('https://www.google.com/', '_system');
+    cordova.plugins.browsertab.close();
 
-Complete example with fallback handling:
+You can also open a URL in the system browser:
 
-    var testURL = 'https://www.google.com';
+    cordova.plugins.browsertab.openUrlInBrowser(url, options, onSuccess, onError);
 
-    document.querySelector("#tabwithfallback").addEventListener('click', function(ev) {
-    cordova.plugins.browsertab.isAvailable(function(result) {
-        if (!result) {
-          cordova.InAppBrowser.open(testURL, '_system');
-        } else {
-          cordova.plugins.browsertab.openUrl(
-              testURL,
-              function(successResp) {},
-              function(failureResp) {
-                error.textContent = "failed to launch browser tab";
-                error.style.display = '';
-              });
-        }
-      },
-      function(isAvailableError) {
-        error.textContent = "failed to query availability of in-app browser tab";
-        error.style.display = '';
-      });
-    });
+In this case, your WebView will not continue to run Javascript until you switch back to the app.
+
+## oAuth
+
+Typically you would use this plugin for authentication flows, to grab oAuth tokens. In this case, you will have to supply the `scheme` option to be used in iOS 11:
+
+    cordova.plugins.browsertab.openUrl(url, {scheme: "myapp://"}, onSuccess, onError);
+
+On iOS 11 the user will have an additional dialog before the flow proceeds, telling the user your app wants to authenticate with a certain website.
+
+Note that the oAuth flows such as [facebook login](https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow/) will only agree to redirect you to a web url that begins with `http://` or `https://`. That means a successful login will still leave the user looking at the browser tab. Thus, you should redirect them to your website, which should then use `location.href = "myapp://something?parameters=here";` to send a message back to your Cordova app. Alternatively, you can set up [Universal Links](https://developer.apple.com/library/content/documentation/General/Conceptual/AppSearch/UniversalLinks.html) on iOS and [App Links](https://developer.android.com/training/app-links/index.html) on Android to make this step more seamless (and possibly more future-proof if custom URL schemes ever go away).
+
+In any case, you will need a plugin such as [this one](https://github.com/EddyVerbruggen/Custom-URL-scheme) to run Javascript on `handleOpenURL`. This returns control to your WebView and you can now call `close()` on the previously opened browser tab.
 
 ## Building
 

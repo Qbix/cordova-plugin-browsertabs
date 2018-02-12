@@ -59,9 +59,9 @@
     BOOL isOpenSafariVC = YES;
     
     if (@available(iOS 11.0, *)) {
-        if (options != nil && [options isKindOfClass:[NSDictionary class]] && [options objectForKey:@"schema"] != nil) {
+        if (options != nil && [options isKindOfClass:[NSDictionary class]] && [options objectForKey:@"scheme"] != nil) {
             isOpenSafariVC = NO;
-            NSString* redirectScheme = [options objectForKey:@"schema"];
+            NSString* redirectScheme = [options objectForKey:@"scheme"];
             
             SFAuthenticationSession* authenticationVC =
             [[SFAuthenticationSession alloc] initWithURL:url
