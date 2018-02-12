@@ -63,6 +63,7 @@ exports.openUrl = function (url, options, success, error) {
  * @param {Function} error
  */
 exports.openUrlInTab = function(url, options, success, error) {
+   if(options == undefined) { options = {} }
    exec(success, error, 'BrowserTab', 'openUrl', [url, options]);
 };
 
