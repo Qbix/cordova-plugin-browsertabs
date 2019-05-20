@@ -14,6 +14,7 @@
 
 package com.google.cordova.plugin.browsertab;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -66,8 +67,16 @@ public class BrowserTab extends CordovaPlugin {
     } else if("openUrlInBrowser".equals(action)) {
       openExternal(args, callbackContext);
     } else if ("close".equals(action)) {
-      // close is a NOP on Android
-      return true;
+      // Make sure that task
+      Activity activity = this.cordova.getActivity();
+      if(activity.getIntent().getFlags() == Intent.FLAG_ACTIVITY_NEW_TASK) {
+        Intent intent = new Intent(activity, activity.getClass());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        activity.startActivity(intent);
+        callbackContext.success();
+      } else {
+        callbackContext.error("Launch Mode of activity isn't \"singleTask\". Please change it to make this method workable");
+      }
     } else {
       return false;
     }

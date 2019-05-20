@@ -18,11 +18,14 @@
 
     <platform name="android">
         <config-file parent="/*" target="res/xml/config.xml">
+            <preference name="AndroidLaunchMode" value="singleTask"/>
             <feature name="BrowserTab">
                 <param name="android-package"
                     value="com.google.cordova.plugin.browsertab.BrowserTab" />
             </feature>
         </config-file>
+
+
         <source-file src="src/android/BrowserTab.java"
             target-dir="src/com/google/cordova/plugin" />
         <framework src="com.android.support:customtabs:23.3.0"/>
