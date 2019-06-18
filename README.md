@@ -12,16 +12,17 @@ To open a URL in an in-app browser tab:
 
     cordova.plugins.browsertab.openUrl(url, options, onSuccess, onError);
 
-Your Cordova WebView continues to run Javascript. So you can close the tab later:
-__WARNING!!!__ On Android this method doesn't work. User should close this window manually or you can do it in JS open app by navigate to `<scheme of app>://` 
-
-    cordova.plugins.browsertab.close();
-
 You can also open a URL in the system browser:
 
     cordova.plugins.browsertab.openUrlInBrowser(url, options, onSuccess, onError);
 
 In this case, your WebView will not continue to run Javascript until you switch back to the app.
+
+Your Cordova WebView continues to run Javascript. So you can close the tab later:
+To make this method workable on Android we will use trick with LaunchMode "singleTask". Or usser should close this window manually or you can do it in JS open app by navigate to `<scheme of app>://`
+
+    cordova.plugins.browsertab.close();
+
 
 ## oAuth
 
