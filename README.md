@@ -19,7 +19,9 @@ You can also open a URL in the system browser:
 In this case, your WebView will not continue to run Javascript until you switch back to the app.
 
 Your Cordova WebView continues to run Javascript. So you can close the tab later:
-To make this method workable on Android we will use trick with LaunchMode "singleTask". Or usser should close this window manually or you can do it in JS open app by navigate to `<scheme of app>://`
+To make this method workable on Android we will use trick with LaunchMode "singleTask".
+
+The user could close the browsertab manually, or you can accomplish it in the JS by navigating to `closeUrl = "<scheme of app>://#put_extra_information_here"` and this URL will be sent as the first parameter in `onSuccess` as a `String`. For oAuth and other scenarios, you either redirect to this URL directly, or set up a URL on your own server, which will call `window.location = closeUrl`
 
     cordova.plugins.browsertabs.close();
 
