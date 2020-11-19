@@ -15,15 +15,21 @@ To open a URL in an in-app browser tab:
 You can also open a URL in the system browser:
 
     cordova.plugins.browsertabs.openUrlInBrowser(url, options, onSuccess, onError);
+    
+The supported options are:
+
+    safariViewController: Boolean // iOS only, pass true if you don't need cookies, storage, etc. to skip OS warning
+    onOpen: Function // if preesent, this function is called when the browsertab is successfully opened
 
 In this case, your WebView will not continue to run Javascript until you switch back to the app.
 
-Your Cordova WebView continues to run Javascript. So you can close the tab later:
-To make this method workable on Android we will use trick with LaunchMode "singleTask".
-
-The user could close the browsertab manually, or you can accomplish it in the JS by navigating to `closeUrl = "<scheme of app>://#put_extra_information_here"` and this URL will be sent as the first parameter in `onSuccess` as a `String`. For oAuth and other scenarios, you either redirect to this URL directly, or set up a URL on your own server, which will call `window.location = closeUrl`
+Your Cordova WebView continues to run Javascript, so you can close the tab later with:
 
     cordova.plugins.browsertabs.close();
+
+To make this method workable on Android we will use trick with LaunchMode "singleTask".
+
+The user could close the browsertab manually, or you can accomplish it in the JS by navigating to `closeUrl = "<scheme of app>://#put_extra_information_here"` and this URL will be sent as the first parameter in `onSuccess` as a `String`.
 
 
 ## oAuth
