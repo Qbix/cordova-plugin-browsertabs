@@ -1,4 +1,4 @@
-# cordova-plugin-browsertab
+# cordova-plugin-browsertabs
   Cordova plugin to open URLs in browser tabs with access to cookies (iOS, Android)
 
 # Platforms
@@ -10,25 +10,25 @@
 
 To open a URL in an in-app browser tab:
 
-    cordova.plugins.browsertab.openUrl(url, options, onSuccess, onError);
+    cordova.plugins.browsertabs.openUrl(url, options, onSuccess, onError);
 
 You can also open a URL in the system browser:
 
-    cordova.plugins.browsertab.openUrlInBrowser(url, options, onSuccess, onError);
+    cordova.plugins.browsertabs.openUrlInBrowser(url, options, onSuccess, onError);
 
 In this case, your WebView will not continue to run Javascript until you switch back to the app.
 
 Your Cordova WebView continues to run Javascript. So you can close the tab later:
 To make this method workable on Android we will use trick with LaunchMode "singleTask". Or usser should close this window manually or you can do it in JS open app by navigate to `<scheme of app>://`
 
-    cordova.plugins.browsertab.close();
+    cordova.plugins.browsertabs.close();
 
 
 ## oAuth
 
 Typically you would use this plugin for authentication flows, to grab oAuth tokens. In this case, you will have to supply the `scheme` option to be used in iOS 11:
 
-    cordova.plugins.browsertab.openUrl(url, {scheme: "myapp://"}, onSuccess, onError);
+    cordova.plugins.browsertabs.openUrl(url, {scheme: "myapp://"}, onSuccess, onError);
 
 On iOS 11 the user will have an additional dialog before the flow proceeds, telling the user your app wants to authenticate with a certain website.
 
