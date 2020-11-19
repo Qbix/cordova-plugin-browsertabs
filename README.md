@@ -19,7 +19,7 @@ You can also open a URL in the system browser:
 The supported options are:
 
     safariViewController: Boolean // iOS only, pass true if you don't need cookies, storage, etc. to skip OS warning
-    onOpen: Function // if preesent, this function is called when the browsertab is successfully opened
+    onOpen: Function // if present, this function is called when the browsertab is successfully opened
 
 In this case, your WebView will not continue to run Javascript until you switch back to the app.
 
