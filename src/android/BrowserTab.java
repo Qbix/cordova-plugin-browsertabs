@@ -58,6 +58,7 @@ public class BrowserTab extends CordovaPlugin {
   private boolean mFindCalled = false;
   private String mCustomTabsBrowser;
   private String lastScheme;
+  private boolean isInvokedActivitResultClose = false;
   private CallbackContext callbackContext;
 
   @Override
@@ -127,12 +128,27 @@ public class BrowserTab extends CordovaPlugin {
         lastScheme = null;
         sendSuccessResult(callbackContext, openUrl);
         this.callbackContext = null;
-        closeCustomTab();
+        if(!isInvokedActivitResultClose) {
+          closeCustomTab();
+        }
+        isInvokedActivitResultClose = false;
       }
     }
   }
 
+
+  @Override
+  public void onResume(boolean multitasking) {
+    super.onResume(multitasking);
+    if(callbackContext != null && isInvokedActivitResultClose){
+      sendCloseResult(callbackContext);
+      callbackContext = null;
+      isInvokedActivitResultClose = false;
+    }
+  }
+
   private void openUrl(JSONArray args, CallbackContext callbackContext) {
+    isInvokedActivitResultClose = false;
     if (args.length() < 1) {
       Log.d(LOG_TAG, "openUrl: no url argument received");
       callbackContext.error("URL argument missing");
@@ -172,13 +188,10 @@ public class BrowserTab extends CordovaPlugin {
   public void onActivityResult(int requestCode, int resultCode, Intent intent) {
     super.onActivityResult(requestCode, resultCode, intent);
     if(requestCode == CUSTOM_TAB_REQUEST_CODE){
-
-      if(callbackContext != null){
-        sendCloseResult(callbackContext);
-        callbackContext = null;
-      }
+      isInvokedActivitResultClose = true;
     }
   }
+
 
   public void openExternal(JSONArray args, CallbackContext callbackContext) {
     if (args.length() < 1) {

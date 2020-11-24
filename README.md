@@ -1,6 +1,12 @@
 # cordova-plugin-browsertabs
   Cordova plugin to open URLs in browser tabs with access to cookies (iOS, Android)
 
+## Building
+
+Install cordova-plugin-browsertabs plugin:
+
+    cordova plugin add https://github.com/Qbix/cordova-plugin-browsertabs.git#v1.0.0
+
 # Platforms
 
 * iOS ([SFSafariViewController](https://developer.apple.com/documentation/safariservices/sfsafariviewcontroller), [SFAuthenticationSession](https://developer.apple.com/documentation/safariservices/sfauthenticationsession) since iOS 11)
