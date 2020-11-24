@@ -34,13 +34,15 @@ var close = function(opt_error) {
  * Opens a url inside an application tab.
  * Note that on iOS 11 and up, this uses SFAuthenticationSession
  * @param {String} url The url to open
- * @param {Object} [options={}]
- * @param {String} options.scheme The scheme to switch back to your app in iOS 11
+ * @param {Object} [options={
+    authSession: <true|false> - open SFAuthenticationSession(>= iOS 11) | open SFSafariViewController,
+    scheme: "myapp://" - if scheme present, app will catch ivocation of handleOpenUrl and send to success callback
+    onOpen: function() - notify when browsertab opened
+ }]
  * @param {Function} success
  * @param {Function} error
  */
 exports.openUrl = function (url, options, success, error) {
-   if(options == undefined) { options = {} }
    exports.isAvailable(function (result) {
        if (result) {
            exports.openUrlInTab(url, options, success, error);
@@ -54,16 +56,28 @@ exports.openUrl = function (url, options, success, error) {
 
 /**
  * Opens a url inside an application tab.
- * Note that on iOS 11 and up, this uses SFAuthenticationSession
  * @param {String} url The url to open
- * @param {Object} [options={}]
- * @param {String} options.scheme The scheme to switch back to your app in iOS 11
+ * @param {Object} [options={
+    authSession: <true|false> - open SFAuthenticationSession(>= iOS 11) | open SFSafariViewController,
+    scheme: "myapp://" - if scheme present, app will catch ivocation of handleOpenUrl and send to success callback
+    onOpen: function() - notify when browsertab opened
+ }]
  * @param {Function} success
  * @param {Function} error
  */
 exports.openUrlInTab = function(url, options, success, error) {
-   if(options == undefined) { options = {} }
-   exec(success, error, 'BrowserTab', 'openUrl', [url, options]);
+    if(options == undefined) { options = {authSession:false, scheme:""} }
+    exec(success, function(args){
+        console.log(args);
+        if(args != undefined && Number.isInteger(args) && args == 1) {
+            //Open successfully;
+            if(options.onOpen != undefined) {
+                options.onOpen();
+            }
+        } else {
+            error(args);
+        }
+    }, 'BrowserTab', 'openUrl', [url, options]);
 };
 
 /**

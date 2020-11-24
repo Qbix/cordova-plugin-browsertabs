@@ -45,6 +45,7 @@ import org.json.JSONObject;
 public class BrowserTab extends CordovaPlugin {
 
   public static final int RC_OPEN_URL = 101;
+  public static final int CUSTOM_TAB_REQUEST_CODE = 1;
 
   private static final String LOG_TAG = "BrowserTab";
 
@@ -56,6 +57,8 @@ public class BrowserTab extends CordovaPlugin {
 
   private boolean mFindCalled = false;
   private String mCustomTabsBrowser;
+  private String lastScheme;
+  private CallbackContext callbackContext;
 
   @Override
   public boolean execute(String action, JSONArray args, CallbackContext callbackContext) {
@@ -68,11 +71,7 @@ public class BrowserTab extends CordovaPlugin {
       openExternal(args, callbackContext);
     } else if ("close".equals(action)) {
       // Make sure that task
-      Activity activity = this.cordova.getActivity();
-      if(activity.getIntent().getFlags() == Intent.FLAG_ACTIVITY_NEW_TASK) {
-        Intent intent = new Intent(activity, activity.getClass());
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        activity.startActivity(intent);
+      if(closeCustomTab()) {
         callbackContext.success();
       } else {
         callbackContext.error("Launch Mode of activity isn't \"singleTask\". Please change it to make this method workable");
@@ -84,12 +83,53 @@ public class BrowserTab extends CordovaPlugin {
     return true;
   }
 
+  private boolean closeCustomTab() {
+    Activity activity = this.cordova.getActivity();
+    if(activity.getIntent().getFlags() == Intent.FLAG_ACTIVITY_NEW_TASK) {
+      Intent intent = new Intent(activity, activity.getClass());
+      intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      activity.startActivity(intent);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   private void isAvailable(CallbackContext callbackContext) {
     String browserPackage = findCustomTabBrowser();
     Log.d(LOG_TAG, "browser package: " + browserPackage);
     callbackContext.sendPluginResult(new PluginResult(
         PluginResult.Status.OK,
         browserPackage != null));
+  }
+
+  private void sendCloseResult(CallbackContext callbackContext) {
+    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "");
+  }
+
+  private void sendSuccessResult(CallbackContext callbackContext, String url) {
+    PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, url);
+    callbackContext.sendPluginResult(pluginResult);
+  }
+
+  private void sendOpenResult(CallbackContext callbackContext) {
+    PluginResult pluginResult = new PluginResult(PluginResult.Status.ERROR, 1);
+    pluginResult.setKeepCallback(true);
+    callbackContext.sendPluginResult(pluginResult);
+  }
+
+  @Override
+  public void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    if(lastScheme != null && intent.getData() != null) {
+      String openUrl = intent.getData().toString();
+      if (openUrl.startsWith(lastScheme)) {
+        lastScheme = null;
+        sendSuccessResult(callbackContext, openUrl);
+        this.callbackContext = null;
+        closeCustomTab();
+      }
+    }
   }
 
   private void openUrl(JSONArray args, CallbackContext callbackContext) {
@@ -102,6 +142,11 @@ public class BrowserTab extends CordovaPlugin {
     String urlStr;
     try {
       urlStr = args.getString(0);
+      JSONObject options = args.getJSONObject(1);
+      if(options.has("scheme") && options.getString("scheme").length() != 0) {
+        lastScheme = options.getString("scheme");
+      }
+
     } catch (JSONException e) {
       Log.d(LOG_TAG, "openUrl: failed to parse url argument");
       callbackContext.error("URL argument is not a string");
@@ -117,10 +162,22 @@ public class BrowserTab extends CordovaPlugin {
     Intent customTabsIntent = new CustomTabsIntent.Builder().build().intent;
     customTabsIntent.setData(Uri.parse(urlStr));
     customTabsIntent.setPackage(mCustomTabsBrowser);
-    cordova.getActivity().startActivity(customTabsIntent);
+    cordova.startActivityForResult(this, customTabsIntent, CUSTOM_TAB_REQUEST_CODE);
 
-    Log.d(LOG_TAG, "in app browser call dispatched");
-    callbackContext.success();
+    this.callbackContext = callbackContext;
+    sendOpenResult(callbackContext);
+  }
+
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+    super.onActivityResult(requestCode, resultCode, intent);
+    if(requestCode == CUSTOM_TAB_REQUEST_CODE){
+
+      if(callbackContext != null){
+        sendCloseResult(callbackContext);
+        callbackContext = null;
+      }
+    }
   }
 
   public void openExternal(JSONArray args, CallbackContext callbackContext) {
