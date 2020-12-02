@@ -106,6 +106,7 @@ public class BrowserTab extends CordovaPlugin {
 
   private void sendCloseResult(CallbackContext callbackContext) {
     PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "");
+    callbackContext.sendPluginResult(pluginResult);
   }
 
   private void sendSuccessResult(CallbackContext callbackContext, String url) {
