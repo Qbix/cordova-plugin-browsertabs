@@ -17,7 +17,7 @@
 #import <Cordova/CDVPlugin.h>
 #import <SafariServices/SafariServices.h>
 
-@interface CBTBrowserTab : CDVPlugin
+@interface CBTBrowserTab : CDVPlugin<SFSafariViewControllerDelegate>
 
 - (void)isAvailable:(CDVInvokedUrlCommand *)command;
 - (void)openUrl:(CDVInvokedUrlCommand *)command;
